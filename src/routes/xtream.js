@@ -39,6 +39,7 @@ const handleXtreamRequest = (req, res) => {
             num: 1, name: path.parse(s.name).name.replace(/[-_]/g, ' '),
             stream_type: "movie", stream_id: s.stream_id,
             category_id: s.category_id, container_extension: s.ext,
+            stream_icon: s.iconUrl
         }));
         if (category_id) streams = streams.filter(s => s.category_id === category_id);
         return res.status(200).json(streams);
@@ -50,7 +51,10 @@ const handleXtreamRequest = (req, res) => {
     }
 
     if (action === 'get_series') {
-        let series = library.seriesList;
+        let series = library.seriesList.map(s => ({
+            ...s,
+            cover: s.coverUrl
+        }));
         if (category_id) series = series.filter(s => s.category_id === category_id);
         return res.status(200).json(series);
     }
