@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ==========================================
-// 1. SANITIZADOR DE URL (Obrigatório vir antes das rotas)
+// 1. URL SANITIZER (Must come before routes)
 // ==========================================
 app.use((req, res, next) => {
   if (req.url.includes('//')) {
@@ -23,12 +23,12 @@ app.use((req, res, next) => {
 // ==========================================
 
 // ==========================================
-// 2. LOGGER GLOBAL DE REQUISIÇÕES
+// 2. GLOBAL REQUEST LOGGER
 // ==========================================
 app.use((req, res, next) => {
   console.log(`\n[${new Date().toLocaleTimeString()}] -> ${req.method} ${req.originalUrl}`);
   console.log('User-Agent:', req.headers['user-agent']);
-  
+
   if (Object.keys(req.query).length > 0) {
     console.log('Query:', req.query);
   }
@@ -39,14 +39,14 @@ app.use((req, res, next) => {
 });
 // ==========================================
 
-// 3. ROTAS
+// 3. ROUTES
 app.use('/', express.static(mediaPath));
 app.use('/', m3uRouter);
 app.use('/', xtreamRouter);
 
 // 4. CATCH-ALL (404)
 app.use((req, res) => {
-  console.log(`[404] O app tentou acessar uma rota que não existe: ${req.originalUrl}`);
+  console.log(`[404] The app tried to access a route that doesn't exist: ${req.originalUrl}`);
   res.status(404).send('Not found');
 });
 
@@ -57,5 +57,5 @@ app.listen(PORT, HOST_BIND, () => {
   console.log(`-> M3U Playlist: http://${SERVER_IP}:${PORT}/playlist.m3u`);
   console.log(`-> Xtream API:   http://${SERVER_IP}:${PORT}/`);
   console.log(`====================================\n`);
-  console.log(`Aguardando requisições do aplicativo...\n`);
+  console.log(`Waiting for app requests...\n`);
 });

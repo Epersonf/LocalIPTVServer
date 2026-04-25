@@ -1,7 +1,7 @@
 // src/utils/scanner.js
 const fs = require('fs');
 const path = require('path');
-const { mediaPath, SERVER_IP, PORT } = require('./config'); // <-- Importe SERVER_IP e PORT
+const { mediaPath, SERVER_IP, PORT } = require('./config'); // <-- Import SERVER_IP and PORT
 
 function generateId(str) {
   let hash = 0;
@@ -23,20 +23,20 @@ function scanLibrary() {
   const seriesDir = path.join(mediaPath, 'Series');
   const supportedExts = ['.mp4', '.mkv', '.avi'];
 
-  // Função auxiliar para achar a capa
+  // Helper function to find the cover
   function findCoverUrl(dir, baseName) {
     const possibleImages = [`${baseName}.jpg`, `${baseName}.png`, `${baseName}.jpeg`, 'folder.jpg', 'cover.jpg'];
     for (const img of possibleImages) {
       if (fs.existsSync(path.join(dir, img))) {
         const relativeImgPath = path.relative(mediaPath, path.join(dir, img)).split(path.sep).join('/');
-        // O Xtream exige URL absoluta para imagens
+        // Xtream requires absolute URL for images
         return `http://${SERVER_IP}:${PORT}/${encodeURI(relativeImgPath)}`;
       }
     }
     return "";
   }
 
-  // --- 1. LÓGICA DE FILMES (VOD) ---
+  // --- 1. MOVIES LOGIC (VOD) ---
   function traverseMovies(dir) {
     if (!fs.existsSync(dir)) return;
     const list = fs.readdirSync(dir, { withFileTypes: true });
@@ -50,7 +50,7 @@ function scanLibrary() {
         if (supportedExts.includes(ext)) {
           const baseName = path.parse(dirent.name).name;
           const relativeDir = path.relative(moviesDir, path.dirname(fullPath));
-          const groupTitle = relativeDir === '' ? 'Filmes' : relativeDir.split(path.sep).join(' / ');
+          const groupTitle = relativeDir === '' ? 'Movies' : relativeDir.split(path.sep).join(' / ');
           
           const categoryId = generateId('VOD_' + groupTitle);
           if (!vodCategoriesMap.has(categoryId)) {
@@ -63,7 +63,7 @@ function scanLibrary() {
             name: dirent.name,
             ext: ext.replace('.', ''),
             category_id: categoryId,
-            iconUrl: findCoverUrl(dir, baseName), // <-- Busca a imagem
+            iconUrl: findCoverUrl(dir, baseName), // <-- Fetch the image
             urlPath: path.relative(mediaPath, fullPath).split(path.sep).join('/')
           });
 
@@ -73,12 +73,12 @@ function scanLibrary() {
     }
   }
 
-  // --- 2. LÓGICA DE SÉRIES ---
+  // --- 2. SERIES LOGIC ---
   function scanSeries() {
     if (!fs.existsSync(seriesDir)) return;
     
-    const seriesCatId = generateId('Séries');
-    seriesCategoriesMap.set(seriesCatId, { category_id: seriesCatId, category_name: 'Minhas Séries' });
+    const seriesCatId = generateId('Series');
+    seriesCategoriesMap.set(seriesCatId, { category_id: seriesCatId, category_name: 'My Series' });
 
     const shows = fs.readdirSync(seriesDir, { withFileTypes: true }).filter(d => d.isDirectory());
     
@@ -91,7 +91,7 @@ function scanLibrary() {
         series_id: seriesId,
         name: showName.replace(/[-_]/g, ' '),
         category_id: seriesCatId,
-        coverUrl: findCoverUrl(showFullPath, showName) // <-- Busca a imagem da série
+        coverUrl: findCoverUrl(showFullPath, showName) // <-- Fetch the series image
       });
 
       const episodes = [];
@@ -114,7 +114,7 @@ function scanLibrary() {
                 title: baseName.replace(/[-_]/g, ' '),
                 container_extension: ext.replace('.', ''),
                 season: currentSeason,
-                iconUrl: findCoverUrl(dir, baseName), // <-- Busca imagem do episódio (opcional)
+                iconUrl: findCoverUrl(dir, baseName), // <-- Fetch episode image (optional)
                 urlPath: path.relative(mediaPath, fullPath).split(path.sep).join('/')
               });
               streamsMap.set(streamId, { fullPath });

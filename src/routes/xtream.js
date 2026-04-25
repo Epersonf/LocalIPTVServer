@@ -22,14 +22,14 @@ const handleXtreamRequest = (req, res) => {
                 exp_date: "1999999999", is_trial: "0", active_cons: "1", max_connections: "10",
                 allowed_output_formats: ["m3u8", "ts", "rtmp"]
             },
-            server_info: { 
-                url: SERVER_IP, port: PORT.toString(), server_protocol: "http", 
-                timezone: "America/Sao_Paulo", timestamp_now: Math.floor(Date.now() / 1000) 
+            server_info: {
+                url: SERVER_IP, port: PORT.toString(), server_protocol: "http",
+                timezone: "America/Sao_Paulo", timestamp_now: Math.floor(Date.now() / 1000)
             }
         });
     }
 
-    // --- FILMES (VOD) ---
+    // --- MOVIES (VOD) ---
     if (action === 'get_vod_categories') {
         return res.status(200).json(library.vodCategories);
     }
@@ -45,7 +45,7 @@ const handleXtreamRequest = (req, res) => {
         return res.status(200).json(streams);
     }
 
-    // --- SÉRIES ---
+    // --- SERIES ---
     if (action === 'get_series_categories') {
         return res.status(200).json(library.seriesCategories);
     }
@@ -56,10 +56,10 @@ const handleXtreamRequest = (req, res) => {
             name: s.name,
             series_id: s.series_id,
             cover: s.coverUrl || "",
-            plot: "Série reproduzida do Servidor Local.",
+            plot: "Series playing from Local Server.",
             cast: "",
             director: "",
-            genre: "Série",
+            genre: "Series",
             releaseDate: "",
             last_modified: "",
             rating: "5",
@@ -73,21 +73,21 @@ const handleXtreamRequest = (req, res) => {
         return res.status(200).json(series);
     }
 
-    // Endpoint crucial que monta as temporadas e episódios
+    // Crucial endpoint that builds seasons and episodes
     if (action === 'get_series_info' && series_id) {
         const episodesList = library.seriesEpisodesMap.get(series_id) || [];
-        const info = library.seriesList.find(s => s.series_id === series_id) || { name: "Série" };
-        
+        const info = library.seriesList.find(s => s.series_id === series_id) || { name: "Series" };
+
         const formattedEpisodes = {};
         const seasonsMap = new Set();
 
         episodesList.forEach((ep, index) => {
             seasonsMap.add(ep.season);
-            // O Smarters exige que a chave da temporada no objeto seja uma String
+            // Smarters requires the season key in the object to be a String
             const seasonStr = ep.season.toString();
 
             if (!formattedEpisodes[seasonStr]) formattedEpisodes[seasonStr] = [];
-            
+
             formattedEpisodes[seasonStr].push({
                 id: ep.id,
                 episode_num: index + 1,
@@ -96,7 +96,7 @@ const handleXtreamRequest = (req, res) => {
                 season: ep.season,
                 custom_sid: "",
                 added: "1700000000",
-                info: { 
+                info: {
                     name: ep.title,
                     season: seasonStr,
                     cover: ep.iconUrl || info.coverUrl || ""
@@ -105,20 +105,20 @@ const handleXtreamRequest = (req, res) => {
         });
 
         const seasons = Array.from(seasonsMap).map(s => ({
-            season_number: s, 
-            name: `Temporada ${s}`,
+            season_number: s,
+            name: `Season ${s}`,
             episode_count: formattedEpisodes[s.toString()].length,
             overview: ""
         }));
 
-        // Informações falsas/genéricas apenas para o Smarters não travar a tela
+        // Fake/generic information just so Smarters doesn't crash the screen
         const formattedInfo = {
             name: info.name,
             cover: info.coverUrl || "",
-            plot: "Reproduzindo do Servidor Local",
+            plot: "Playing from Local Server",
             cast: "",
             director: "",
-            genre: "Série",
+            genre: "Series",
             releaseDate: "",
             last_modified: "",
             rating: "5",
@@ -143,7 +143,7 @@ const handleXtreamRequest = (req, res) => {
 router.get('/player_api.php', handleXtreamRequest);
 router.post('/player_api.php', handleXtreamRequest);
 
-// ROTA UNIFICADA DE REPRODUÇÃO: O Smarters usa /movie para filmes e /series para episódios
+// UNIFIED PLAYBACK ROUTE: Smarters uses /movie for movies and /series for episodes
 const playbackHandler = (req, res) => {
     const streamId = req.params.streamIdExt.split('.')[0];
     const library = scanLibrary();

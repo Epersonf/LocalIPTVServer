@@ -9,7 +9,7 @@ router.get('/playlist.m3u', (req, res) => {
   const library = scanLibrary();
   let m3uContent = '#EXTM3U\n\n';
 
-  // Adiciona Filmes
+  // Add Movies
   library.vodStreams.forEach(s => {
     const displayName = path.parse(s.name).name.replace(/[-_]/g, ' ');
     const categoryName = library.vodCategories.find(c => c.category_id === s.category_id).category_name;
@@ -19,11 +19,11 @@ router.get('/playlist.m3u', (req, res) => {
     m3uContent += `http://${SERVER_IP}:${PORT}/${encodedUrlPath}\n\n`;
   });
 
-  // Adiciona Séries
+  // Add Series
   library.seriesList.forEach(serie => {
     const episodes = library.seriesEpisodesMap.get(serie.series_id) || [];
     episodes.forEach(ep => {
-      m3uContent += `#EXTINF:-1 tvg-type="vod" group-title="Séries / ${serie.name} / T${ep.season}", ${ep.title}\n`;
+      m3uContent += `#EXTINF:-1 tvg-type="vod" group-title="Series / ${serie.name} / S${ep.season}", ${ep.title}\n`;
       const encodedUrlPath = ep.urlPath.split('/').map(encodeURIComponent).join('/');
       m3uContent += `http://${SERVER_IP}:${PORT}/${encodedUrlPath}\n\n`;
     });

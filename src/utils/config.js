@@ -14,7 +14,7 @@ args.forEach(arg => {
   }
 });
 
-// CORREÇÃO AQUI: Subindo dois níveis (de src/utils para src, e de src para a raiz)
+// CORRECTION HERE: Going up two levels (from src/utils to src, and from src to root)
 const mediaPath = path.join(__dirname, '..', '..', 'public');
 
 module.exports = { PORT, HOST_BIND, SERVER_IP, mediaPath };
