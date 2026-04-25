@@ -4,7 +4,9 @@
   "description": "VOD Server for IPTV (serves static files, supports Range requests)",
   "main": "server.js",
   "scripts": {
-    "start": "node src/server.js --host=0.0.0.0 --server-ip=192.168.1.5"
+    "start": "node src/server.js --host=0.0.0.0 --server-ip=192.168.1.5",
+    "pm2-start": "pm2 start ecosystem.config.js && pm2 save",
+    "pm2-stop": "pm2 stop localiptv && pm2 delete localiptv"
   },
   "author": "",
   "license": "MIT",
