@@ -1,0 +1,14 @@
+{
+  "name": "localiptv",
+  "version": "1.0.0",
+  "description": "VOD Server for IPTV (serves static files, supports Range requests)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
