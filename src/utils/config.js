@@ -1,7 +1,7 @@
 // src/utils/config.js
 const path = require('path');
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 let HOST_BIND = '0.0.0.0';
 let SERVER_IP = '127.0.0.1';
 
