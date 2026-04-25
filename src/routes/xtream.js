@@ -9,8 +9,8 @@ const handleXtreamRequest = (req, res) => {
     const action = req.query.action || req.body?.action;
     const username = req.query.username || req.body?.username || "admin";
     const password = req.query.password || req.body?.password || "admin";
-    const category_id = req.query.category_id;
-    const series_id = req.query.series_id;
+    const category_id = req.query.category_id || req.body?.category_id;
+    const series_id = req.query.series_id || req.body?.series_id;
 
     const library = scanLibrary();
 

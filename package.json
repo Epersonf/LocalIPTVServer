@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js --host=0.0.0.0 --server-ip=192.168.1.5",
     "pm2-start": "pm2 start ecosystem.config.js && pm2 save",
-    "pm2-stop": "pm2 stop localiptv && pm2 delete localiptv"
+    "pm2-stop": "pm2 stop iptv-server && pm2 delete iptv-server",
+    "pm2-restart": "pm2 restart iptv-server && pm2 save"
   },
   "author": "",
   "license": "MIT",
