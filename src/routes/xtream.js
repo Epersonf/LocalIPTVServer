@@ -52,8 +52,22 @@ const handleXtreamRequest = (req, res) => {
 
     if (action === 'get_series') {
         let series = library.seriesList.map(s => ({
-            ...s,
-            cover: s.coverUrl
+            num: 1,
+            name: s.name,
+            series_id: s.series_id,
+            cover: s.coverUrl || "",
+            plot: "Série reproduzida do Servidor Local.",
+            cast: "",
+            director: "",
+            genre: "Série",
+            releaseDate: "",
+            last_modified: "",
+            rating: "5",
+            rating_5based: 5,
+            backdrop_path: [],
+            youtube_trailer: "",
+            episode_run_time: "45",
+            category_id: s.category_id
         }));
         if (category_id) series = series.filter(s => s.category_id === category_id);
         return res.status(200).json(series);
@@ -64,31 +78,60 @@ const handleXtreamRequest = (req, res) => {
         const episodesList = library.seriesEpisodesMap.get(series_id) || [];
         const info = library.seriesList.find(s => s.series_id === series_id) || { name: "Série" };
         
-        // Separa os episódios em um objeto onde a chave é o número da temporada
         const formattedEpisodes = {};
         const seasonsMap = new Set();
 
         episodesList.forEach((ep, index) => {
             seasonsMap.add(ep.season);
-            if (!formattedEpisodes[ep.season]) formattedEpisodes[ep.season] = [];
+            // O Smarters exige que a chave da temporada no objeto seja uma String
+            const seasonStr = ep.season.toString();
+
+            if (!formattedEpisodes[seasonStr]) formattedEpisodes[seasonStr] = [];
             
-            formattedEpisodes[ep.season].push({
+            formattedEpisodes[seasonStr].push({
                 id: ep.id,
                 episode_num: index + 1,
                 title: ep.title,
                 container_extension: ep.container_extension,
-                info: { season: ep.season }
+                season: ep.season,
+                custom_sid: "",
+                added: "1700000000",
+                info: { 
+                    name: ep.title,
+                    season: seasonStr,
+                    cover: ep.iconUrl || info.coverUrl || ""
+                }
             });
         });
 
-        // Monta o array de temporadas formatado pro Smarters
         const seasons = Array.from(seasonsMap).map(s => ({
-            season_number: s, name: `Temporada ${s}`
+            season_number: s, 
+            name: `Temporada ${s}`,
+            episode_count: formattedEpisodes[s.toString()].length,
+            overview: ""
         }));
+
+        // Informações falsas/genéricas apenas para o Smarters não travar a tela
+        const formattedInfo = {
+            name: info.name,
+            cover: info.coverUrl || "",
+            plot: "Reproduzindo do Servidor Local",
+            cast: "",
+            director: "",
+            genre: "Série",
+            releaseDate: "",
+            last_modified: "",
+            rating: "5",
+            rating_5based: 5,
+            backdrop_path: [],
+            youtube_trailer: "",
+            episode_run_time: "45",
+            category_id: info.category_id
+        };
 
         return res.status(200).json({
             seasons: seasons,
-            info: info,
+            info: formattedInfo,
             episodes: formattedEpisodes
         });
     }
